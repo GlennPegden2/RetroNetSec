@@ -1,5 +1,5 @@
 # RetroNetSec
-A fully fledge network of yester-year to teach long forgotten security techniques
+A fully fledged network of yester-year to teach long forgotten security techniques
 
 NOT a CTF - A learning platform, play with ancient vulns for ancient systems
 
