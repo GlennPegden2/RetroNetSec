@@ -11,4 +11,4 @@ RUN mkdir -p ${GOPATH}/src ${GOPATH}/bin
 
 WORKDIR $GOPATH
 
-ENTRYPOINT qemu-system-x86_64 -m 512 -nic user -drive file=/root/DosBSL.img,index=0,if=floppy,format=raw,readonly=on  -boot a -vnc :0 -s -no-fd-bootchk
+ENTRYPOINT qemu-system-x86_64 -m 512 -nic user -drive file=/root/Dos6.22.img,index=0,if=floppy,format=raw,readonly=on  -boot a -vnc :0 -s -no-fd-bootchk
