@@ -1,0 +1,34 @@
+#docker-compose.yml (Base)
+version: '3.4'
+services:
+  vde-switch:
+    image: retronetsec/vde-switch:${TAG:-latest}
+    build: ./networking/vde-switch
+    ports: 
+      - "2022:22"
+    networks:
+      - retronet  
+    container_name: vde-switch
+    
+  
+
+  dos611:
+    image: retronetsec/dos622:${TAG:-latest}
+    build : ./clients/DOS/ms-dos-6-22
+
+  wfw:
+    image: retronetsec/wfw:${TAG:-latest}
+    build : ./clients/Windows/Win3.11
+    environment:
+      - vdehost=vde-switch
+    depends_on:
+      - vde-switch
+    links:
+      - vde-switch
+    networks:
+      - retronet  
+
+networks:
+  retronet: 
+    driver: bridge     
+
