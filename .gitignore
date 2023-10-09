@@ -1,4 +1,4 @@
-clients/
 media/
 secrets/ssh/id_rsa_shared
 secrets/ssh/id_rsa_shared.pub
+clients/Windows/Win3.11/win31.img
