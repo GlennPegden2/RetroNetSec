@@ -1,0 +1,5 @@
+win31.img is Windows for Workgroups 3.11 running on top of DOS 6.22. It utilses ne2000 network card drivers and the Microsoft TCP stack and optains an IP address over DHCP (in our case from the vde-switch server).
+
+The Password is Password
+
+It also has the Mozilla Netscape Navigator Gold Web Browser installed. 

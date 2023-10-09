@@ -2,4 +2,4 @@ media/
 secrets/ssh/id_rsa_shared
 secrets/ssh/id_rsa_shared.pub
 clients/Windows/Win3.11/win31.img
-clients/DOS/ms-dos-6-22/tmp_Dos6.22.img
+clients/DOS/ms-dos-6-22/Dos6.22.img

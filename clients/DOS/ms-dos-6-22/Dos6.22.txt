@@ -1,0 +1,1 @@
+Dos6.22.img is an MS-DOS boot floppy, it includes no networking.
