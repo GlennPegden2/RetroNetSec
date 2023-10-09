@@ -1,14 +1,21 @@
 #docker-compose.yml (Base)
 version: '3.4'
+
 services:
   vde-switch:
     image: retronetsec/vde-switch:${TAG:-latest}
-    build: ./networking/vde-switch
+    build: 
+      context: ./networking/vde-switch
+      secrets: 
+        - user_ssh_pubkey
+
     ports: 
       - "2022:22"
     networks:
       - retronet  
     container_name: vde-switch
+    stdin_open: true 
+    tty: true
     
   
 
@@ -18,7 +25,10 @@ services:
 
   wfw:
     image: retronetsec/wfw:${TAG:-latest}
-    build : ./clients/Windows/Win3.11
+    build : 
+      context: ./clients/Windows/Win3.11
+      secrets: 
+        - user_ssh_key
     environment:
       - vdehost=vde-switch
     depends_on:
@@ -27,8 +37,16 @@ services:
       - vde-switch
     networks:
       - retronet  
+    ports: 
+       - "5901:5900"  
 
 networks:
   retronet: 
     driver: bridge     
 
+secrets:
+  user_ssh_key:
+    file: ./secrets/ssh/id_rsa_shared
+  user_ssh_pubkey:
+    file: ./secrets/ssh/id_rsa_shared.pub
+     

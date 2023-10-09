@@ -1,2 +1,4 @@
 clients/
 media/
+secrets/ssh/id_rsa_shared
+secrets/ssh/id_rsa_shared.pub
