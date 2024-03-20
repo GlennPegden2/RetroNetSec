@@ -2,12 +2,14 @@ FROM ubuntu
 LABEL name="RetroNetSec_VDE" 
 
 RUN apt-get update && apt-get upgrade -y
-RUN apt-get install -y openssh-server vde2 
+RUN apt-get install -y openssh-server vde2 iproute2
+#RUN apt-get install -y netcat-openbsd ncat socat
 
 RUN groupadd vdeusers
 
 RUN mkdir /home/vde
 COPY start_VDE.sh /root
+COPY start_VDE2.sh /root
 #RUN useradd -s /usr/bin/vde_plug -d /home/vde -m vde 
 RUN useradd -s /home/vde/fake_plug.sh -d /home/vde -m vde 
 COPY fake_plug.sh /home/vde
@@ -23,5 +25,7 @@ RUN mkdir -p /home/vde/.ssh
 RUN --mount=type=secret,id=user_ssh_pubkey cat /run/secrets/user_ssh_pubkey >> /home/vde/.ssh/authorized_keys
 
 
+
 EXPOSE 22
-ENTRYPOINT /root/start_VDE.sh
+#ENTRYPOINT /root/start_VDE.sh
+ENTRYPOINT /bin/bash

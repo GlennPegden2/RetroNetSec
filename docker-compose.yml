@@ -20,12 +20,27 @@ services:
         - user_ssh_pubkey
     ports: 
       - "2022:22"
+      - "5899:5899"  
     networks:
       - retronet  
     container_name: vde-switch
     stdin_open: true 
     tty: true
-    
+    cap_add:
+      - NET_ADMIN
+
+  dns:
+    restart: always
+    image: strm/dnsmasq
+    volumes:
+      - ./networking/dns/dnsmasq.conf:/etc/dnsmasq.conf
+    ports:
+      - "53:53/udp"
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - retronet  
+
   dos611:
     image: retronetsec/dos622:${TAG:-latest}
     build : ./clients/DOS/ms-dos-6-22
@@ -48,4 +63,61 @@ services:
       - retronet  
     ports: 
        - "5901:5900"  
+
+  doomipx:   
+    image: retronetsec/doomipx:${TAG:-latest}
+    build : 
+      context: ./clients/DOS/DoomIPX
+      secrets: 
+        - user_ssh_key
+    environment:
+      - vdehost=vde-switch
+    depends_on:
+        vde-switch:
+          condition: service_started
+    links:
+      - vde-switch
+    networks:
+      - retronet  
+    ports: 
+       - "5902:5900"  
+
+
+  doomipx2:   
+    image: retronetsec/doomipx2:${TAG:-latest}
+    build : 
+      context: ./clients/DOS/DoomIPX2
+      secrets: 
+        - user_ssh_key
+    environment:
+      - vdehost=vde-switch
+    depends_on:
+        vde-switch:
+          condition: service_started
+    links:
+      - vde-switch
+    networks:
+      - retronet  
+    ports: 
+       - "5903:5900"  
+
+
+
+  stig:   
+    image: retronetsec/stig:${TAG:-latest}
+    build : 
+      context: ./clients/DOS/stig
+      secrets: 
+        - user_ssh_key
+    environment:
+      - vdehost=vde-switch
+    depends_on:
+        vde-switch:
+          condition: service_started
+    links:
+      - vde-switch
+    networks:
+      - retronet  
+    ports: 
+       - "5904:5900"  
 

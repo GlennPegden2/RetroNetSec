@@ -3,3 +3,8 @@ secrets/ssh/id_rsa_shared
 secrets/ssh/id_rsa_shared.pub
 clients/Windows/Win3.11/win31.img
 clients/DOS/ms-dos-6-22/Dos6.22.img
+servers/Netware/Netware3.12/*
+clients/DOS/DoomIPX/DoomIPX.img
+clients/DOS/DoomIPX2/DoomIPX.img
+clients/DOS/stig/MSDOS SERVER_1.vhd
+clients/DOS/stig/stig.img
