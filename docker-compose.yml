@@ -43,14 +43,14 @@ services:
 
   dos611:
     image: retronetsec/dos622:${TAG:-latest}
-    build : ./clients/DOS/ms-dos-6-22
+    build : ./hosts/DOS/ms-dos-6-22
     ports: 
        - "5900:5900"  
 
   wfw:
     image: retronetsec/wfw:${TAG:-latest}
     build : 
-      context: ./clients/Windows/Win3.11
+      context: ./hosts/Windows/Win3.11
       secrets: 
         - user_ssh_key
     environment:
@@ -67,7 +67,7 @@ services:
   doomipx:   
     image: retronetsec/doomipx:${TAG:-latest}
     build : 
-      context: ./clients/DOS/DoomIPX
+      context: ./hosts/DOS/DoomIPX
       secrets: 
         - user_ssh_key
     environment:
@@ -86,7 +86,7 @@ services:
   doomipx2:   
     image: retronetsec/doomipx:${TAG:-latest}
     build : 
-      context: ./clients/DOS/DoomIPX
+      context: ./hosts/DOS/DoomIPX
       secrets: 
         - user_ssh_key
     environment:
@@ -101,10 +101,10 @@ services:
     ports: 
        - "5903:5900"  
 
-  doomipxfree:   
+  ms-dos-6-22-tcpip:   
     image: retronetsec/doomipxfree:${TAG:-latest}
     build : 
-      context: ./clients/DOS/DoomIPXFree
+      context: ./hosts/DOS/ms-dos-6-22-tcpip
       secrets: 
         - user_ssh_key
     environment:
@@ -124,7 +124,7 @@ services:
   stig:   
     image: retronetsec/stig:${TAG:-latest}
     build : 
-      context: ./clients/DOS/stig
+      context: ./hosts/DOS/stig
       secrets: 
         - user_ssh_key
     environment:
