@@ -10,6 +10,8 @@ RUN groupadd vdeusers
 RUN mkdir /home/vde
 COPY start_VDE.sh /root
 COPY start_VDE2.sh /root
+COPY pdump.conf /root
+
 #RUN useradd -s /usr/bin/vde_plug -d /home/vde -m vde 
 RUN useradd -s /home/vde/fake_plug.sh -d /home/vde -m vde 
 COPY fake_plug.sh /home/vde
@@ -27,5 +29,5 @@ RUN --mount=type=secret,id=user_ssh_pubkey cat /run/secrets/user_ssh_pubkey >> /
 
 
 EXPOSE 22
-#ENTRYPOINT /root/start_VDE.sh
-ENTRYPOINT /bin/bash
+ENTRYPOINT /root/start_VDE.sh
+#ENTRYPOINT /bin/bash

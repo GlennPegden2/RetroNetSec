@@ -84,9 +84,9 @@ services:
 
 
   doomipx2:   
-    image: retronetsec/doomipx2:${TAG:-latest}
+    image: retronetsec/doomipx:${TAG:-latest}
     build : 
-      context: ./clients/DOS/DoomIPX2
+      context: ./clients/DOS/DoomIPX
       secrets: 
         - user_ssh_key
     environment:
@@ -100,6 +100,24 @@ services:
       - retronet  
     ports: 
        - "5903:5900"  
+
+  doomipxfree:   
+    image: retronetsec/doomipxfree:${TAG:-latest}
+    build : 
+      context: ./clients/DOS/DoomIPXFree
+      secrets: 
+        - user_ssh_key
+    environment:
+      - vdehost=vde-switch
+    depends_on:
+        vde-switch:
+          condition: service_started
+    links:
+      - vde-switch
+    networks:
+      - retronet  
+    ports: 
+       - "5905:5900"  
 
 
 
