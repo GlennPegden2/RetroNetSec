@@ -64,10 +64,10 @@ services:
     ports: 
        - "5901:5900"  
 
-  wfw2:
-    image: retronetsec/wfw:${TAG:-latest}
+  win95plus:
+    image: retronetsec/win95plus:${TAG:-latest}
     build : 
-      context: ./hosts/Windows/Win3.11
+      context: ./hosts/Windows/Win95
       secrets: 
         - user_ssh_key
     environment:

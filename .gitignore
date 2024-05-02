@@ -10,3 +10,4 @@ hosts/DOS/stig/MSDOS SERVER_1.vhd
 hosts/DOS/stig/stig.img
 hosts/DOS/ms-dos-6-22-tcpip/ms-dos-6-22-tcpip.img
 RetroNetSecImages.zip
+hosts/Windows/Win95/win95plus.img
