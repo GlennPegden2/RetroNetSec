@@ -41,7 +41,7 @@ services:
     networks:
       - retronet  
 
-  dos611:
+  dos622:
     image: retronetsec/dos622:${TAG:-latest}
     build : ./hosts/DOS/ms-dos-6-22
     ports: 
@@ -63,6 +63,25 @@ services:
       - retronet  
     ports: 
        - "5901:5900"  
+
+  wfw2:
+    image: retronetsec/wfw:${TAG:-latest}
+    build : 
+      context: ./hosts/Windows/Win3.11
+      secrets: 
+        - user_ssh_key
+    environment:
+      - vdehost=vde-switch
+    depends_on:
+      - vde-switch
+    links:
+      - vde-switch
+    networks:
+      - retronet  
+    ports: 
+       - "5906:5900"  
+
+
 
   doomipx:   
     image: retronetsec/doomipx:${TAG:-latest}
@@ -102,7 +121,7 @@ services:
        - "5903:5900"  
 
   ms-dos-6-22-tcpip:   
-    image: retronetsec/doomipxfree:${TAG:-latest}
+    image: retronetsec/ms-dos-6-22-tcpip:${TAG:-latest}
     build : 
       context: ./hosts/DOS/ms-dos-6-22-tcpip
       secrets: 
