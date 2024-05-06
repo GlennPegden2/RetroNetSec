@@ -31,6 +31,10 @@ Building your own images:
 
 Get the your image working in qemu OUTSIDE of docker first (remember change in running docker containers only persist whilst the container is running). DoomIPX.txt contains a walk-though of how we built that image. Then add it do docker-compose.yml
 
+WHILST THIS IS VERY MUCH PRE-ALPHA QUAILTY, PEOPLE ARE WELCOME TO PLAY WITH IT AN CONTRIBUTE
+
+More Info - https://github.com/GlennPegden2/RetroNetSec/wiki 
+
 
 
 
