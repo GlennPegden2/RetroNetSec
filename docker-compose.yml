@@ -157,6 +157,26 @@ services:
     ports: 
        - "5907:5900"  
 
+  kali:   
+    image: retronetsec/kali:${TAG:-latest}
+    build : 
+      context: ./hosts/modern/kali
+      secrets: 
+        - user_ssh_key
+    environment:
+      - vdehost=vde-switch
+    depends_on:
+        vde-switch:
+          condition: service_started
+    links:
+      - vde-switch
+    networks:
+      - retronet  
+    ports: 
+       - "5922:22"  
+    cap_add:
+      - NET_ADMIN
+
 
   stig:   
     image: retronetsec/stig:${TAG:-latest}
