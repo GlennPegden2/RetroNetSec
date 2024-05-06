@@ -139,6 +139,24 @@ services:
        - "5905:5900"  
 
 
+  v7x86:   
+    image: retronetsec/v7x86:${TAG:-latest}
+    build : 
+      context: ./hosts/Unix/v7x86
+      secrets: 
+        - user_ssh_key
+    environment:
+      - vdehost=vde-switch
+    depends_on:
+        vde-switch:
+          condition: service_started
+    links:
+      - vde-switch
+    networks:
+      - retronet  
+    ports: 
+       - "5907:5900"  
+
 
   stig:   
     image: retronetsec/stig:${TAG:-latest}

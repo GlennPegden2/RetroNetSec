@@ -1,0 +1,3 @@
+v7 Unix, ported to x86 by Robert Nordier - https://www.nordier.com/index.html
+
+100% OSS so can be included on github!
