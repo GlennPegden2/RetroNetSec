@@ -1,0 +1,3 @@
+Doesn't support ssh or vnc. To get as shell, use docker
+
+docker exec  -ti retronetsec-kali-1 /bin/bash
