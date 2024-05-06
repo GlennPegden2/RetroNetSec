@@ -11,6 +11,9 @@ RUN mkdir /home/vde
 COPY start_VDE.sh /root
 COPY start_VDE2.sh /root
 COPY pdump.conf /root
+RUN chmod +rx /root/start_VDE.sh
+RUN chmod +rx /root/start_VDE2.sh
+
 
 #RUN useradd -s /usr/bin/vde_plug -d /home/vde -m vde 
 RUN useradd -s /home/vde/fake_plug.sh -d /home/vde -m vde 

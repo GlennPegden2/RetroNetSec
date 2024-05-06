@@ -1,0 +1,43 @@
+Dos6.22.img is an MS-DOS HD image, configured to used a NE2000 network driver
+
+1. Grab a DOS 6.22 install CD from https://archive.org/details/DOS_6.22_and_Windows_3.1_Install_CDs (includes a bootable floppy and Win 3.1 install CD)
+2. Create a FAT16 HD image  -  qemu-img create DoomIPX.img 152M
+3. Boot qemu from CD image and install DOS to HD - 
+
+qemu-system-x86_64 -m 16 -cpu 486 -net none  -device ne2k_isa,irq=10,iobase=0x320 -hda DoomIPX.img -fda DOS622BT.img -drive format=raw,media=cdrom,readonly=on,file=DOS622_Install_CD_by_Looka_Bootable_EX
+.iso -boot a
+
+fdisk
+option 1 - create partition
+option 1 - primary partition
+Y to data loss
+
+Wait for set up, it will then force you to reboot and reboot back into the boot floppy
+format c:
+Yes to data loss
+Give it a name when prompted
+
+R:
+SETUP.EXE
+
+This should install DOS to the C drive
+
+Press enter when finsihed. It will bood back to the floppy
+
+echo DEVICE=C:\CD1.SYS /D:CDROM >> C:\config.system
+echo C:\DOS\MSCDEX.EXE /D:CDROM /L:D  >> C:\autoexec.bat
+copy A:\CD1.SYS C:\
+
+This should allow you to now boot a DOS 6.22 machine with CDRom support.
+
+qemu-system-x86_64 -m 16 -cpu 486 -net none  -device ne2k_isa,irq=3,iobase=0x300 -hda DoomIPX.img  -drive format=raw,media=cdrom,readonly=on,file=DOS622_Install_CD_by_Looka_Bootable_EX.iso 
+
+Run MSclient, select NE2000 compatible and name your machine
+
+Next download this set up down network drivers https://archive.org/download/microdyneeaglene2000series/Microdyne%20Eagle%20NE2000%20Series.ima and boot it
+
+qemu-system-x86_64 -m 16 -cpu 486 -net none  -device ne2k_isa,irq=3,iobase=0x300,netdev=lan -hda DoomIPX.img -fda "/mnt/d/Downloads/Microdyne Eagle NE2000 Series.ima" -netdev user,id=lan
+
+mkdir C:\NET\IPX
+copy A:\NETWARE\DOSODI\*.* C:\NET\IPX\
+
