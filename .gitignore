@@ -11,3 +11,5 @@ hosts/DOS/stig/stig.img
 hosts/DOS/ms-dos-6-22-tcpip/ms-dos-6-22-tcpip.img
 RetroNetSecImages.zip
 hosts/Windows/Win95/win95plus.img
+.DS_Store
+hosts/Unix/v7x86/v7x86.img
