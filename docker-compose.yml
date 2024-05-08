@@ -29,6 +29,27 @@ services:
     cap_add:
       - NET_ADMIN
 
+  fs1:
+    image: retronetsec/fs1:${TAG:-latest}
+    build : 
+      context: ./networking/FileServer
+      secrets: 
+        - user_ssh_key
+    environment:
+      - vdehost=vde-switch
+    depends_on:
+      - vde-switch
+    links:
+      - vde-switch
+    networks:
+      - retronet  
+    cap_add:
+      - mknod
+      - NET_ADMIN
+
+
+
+
   dns:
     restart: always
     image: strm/dnsmasq
@@ -45,7 +66,7 @@ services:
     image: retronetsec/dos622:${TAG:-latest}
     build : ./hosts/DOS/ms-dos-6-22
     ports: 
-       - "5900:5900"  
+       - "5910:5900"  
 
   wfw:
     image: retronetsec/wfw:${TAG:-latest}
