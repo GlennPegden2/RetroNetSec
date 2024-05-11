@@ -177,6 +177,12 @@ services:
     cap_add:
       - NET_ADMIN
 
+  2600-pots:
+    image: retronetsec/2600-pots:${TAG:-latest}
+    build : 
+      context: ./hosts/misc/2600-pots
+    ports: 
+       - "8080:80"  
 
   stig:   
     image: retronetsec/stig:${TAG:-latest}
