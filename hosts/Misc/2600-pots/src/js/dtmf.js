@@ -1,21 +1,46 @@
+class tones {
 
-    const dtmfFreqs = [
-        [697, 770, 852, 941],
-        [1209, 1336, 1477, 1633]
-    ];
-      
-    const dtmfChars = [
-        ["DTMF1", "DTMF2", "DTMF3", "DTMFA"],
-        ["DTMF4", "DTMF5", "DTMF6", "DTMFB"],
-        ["DTMF7", "DTMF8", "DTMF9", "DTMFC"],
-        ["DTMF*", "DTMF0", "DTMF#", "DTMFD"],
-    ];
-      
-      
-    const sigFreqs = [
-        700, 900, 1100, 1300, 1500, 1700, 2400, 2600
-    ];
-      
+  ss5 = {
+
+    Freqs : [
+      700, 900, 1100, 1300, 1500, 1700, 2400, 2600
+    ],
+  
+    Chars : [
+      ["SSX", "SS51", "SS52", "SS54", "SS57", "SS5ST3", "SS5SZ2400", "SS5SZ2600"],
+      ["SS1", "SS5X", "SS53", "SS55", "SS58", "SS5ST2", "SS5SZ2400", "SS5SZ2600"],
+      ["SS2", "SS53", "SS5X", "SS56", "SS59", "SS5KP", "SS5SZ2400", "SS5SZ2600"],
+      ["SS4", "SS55", "SS56", "SS5X", "SS50", "SS5KP2", "SS5SZ2400", "SS5SZ2600"],
+      ["SS7", "SS58", "SS59", "SS50", "SS5X", "SS5ST", "SS5SZ2400", "SS5SZ2600"],
+      ["SSST3", "SS5ST2", "SS5KP", "SS5KP2", "SS5ST", "SSSTX", "SS5SZ2400", "SS5SZ2600"],
+      ["SS5SZ2400", "SS5SZ2400", "SS5SZ2400", "SS5SZ2400", "SS5SZ2400", "SS5SZ2400", "SS5SZ2400", "SS5SZ2600"],
+      ["SS5SZ2600", "SS5SZ2600", "SS5SZ2600", "SS5SZ2600", "SS5SZ2600", "SS5SZ2600", "SS5SZ2600", "SS5SZ2600"]
+    ],
+
+    last: "",
+    counter: ""
+
+  }
+    
+  dtmf = {
+
+    Freqs: [
+      [697, 770, 852, 941],
+      [1209, 1336, 1477, 1633]
+    ],
+    
+    Chars: [
+      ["DTMF1", "DTMF2", "DTMF3", "DTMFA"],
+      ["DTMF4", "DTMF5", "DTMF6", "DTMFB"],
+      ["DTMF7", "DTMF8", "DTMF9", "DTMFC"],
+      ["DTMF*", "DTMF0", "DTMF#", "DTMFD"],
+    ],
+
+    last: "",
+    counter: ""
+  }
+  
+}
     class Sender {
         constructor(options = {}) {
           var audioContext = new(window.AudioContext || window.webkitAudioContext);
@@ -95,6 +120,8 @@
         constructor(options = {}) {
           this.options = options;
         }
+
+ 
         start(stream, cb) {
           if (this._timer || !cb) return;
       
@@ -115,71 +142,88 @@
             var imax = 0; 
             for (var i = 0; i < xdtmfFreqs.length; i++) {
               var bin = Math.round(xdtmfFreqs[i] / binWidthInHz);
-//                console.log(bin);
+//              if (i >=0 && data[bin] >= 200) { console.log(i+" "+bin+" "+data[bin]+" "+xdtmfFreqs[i])}
               if (data[bin] > max) {
                 max = data[bin];
                 index = i;
                 imax = max;
               }
             }
-//            console.log(imax);
-//            if (imax > 200) {
               return [index,imax];
-//            }  
-//            else { 
-//              return -1;
-//            }    
           }
 
-          function ss5mfChars(f1,f2) {
-            switch (f1) {
-              case 0:
-                if (f2 == 1) { return "SS5/R 1" }
-                if (f2 == 2) { return "SS5/R 2" }
-                if (f2 == 3) { return "SS5/R 4" }
-                if (f2 == 4) { return "SS5/R 7" }
-                if (f2 == 5) { return "SS5/R ST3" }
-              case 1:  
-                if (f2 == 0) { return "SS5/R 1" }
-                if (f2 == 2) { return "SS5/R 3" }
-                if (f2 == 3) { return "SS5/R 5" }
-                if (f2 == 4) { return "SS5/R 8" }
-                if (f2 == 5) { return "SS5/R ST2" }
-              case 2:  
-                if (f2 == 0) { return "SS5/R 2" }
-                if (f2 == 1) { return "SS5/R 3" }
-                if (f2 == 3) { return "SS5/R 6" }
-                if (f2 == 4) { return "SS5/R 9" }
-                if (f2 == 5) { return "SS5/R KP" }
-              case 3:  
-                if (f2 == 0) { return "SS5/R 4" }
-                if (f2 == 1) { return "SS5/R 5" }
-                if (f2 == 2) { return "SS5/R 6" }
-                if (f2 == 4) { return "SS5/R 0" }
-                if (f2 == 5) { return "SS5/R KP2" }
-              case 4:  
-                if (f2 == 0) { return "SS5/R 7" }
-                if (f2 == 1) { return "SS5/R 8" }
-                if (f2 == 2) { return "SS5/R 9" }
-                if (f2 == 3) { return "SS5/R 0" }
-                if (f2 == 5) { return "SS5/R ST" }
-              case 5:
-                if (f2 == 0) { return "SS5/R ST3" }
-                if (f2 == 1) { return "SS5/R ST2" }
-                if (f2 == 2) { return "SS5/R KP" }
-                if (f2 == 3) { return "SS5/R KP2" }
-                if (f2 == 4) { return "SS5/R ST" }
 
-                default:
-                return "Unknown MF combo : "+f1+" "+f2
+          function countTones(t1,t2,toneType,cb) {
+
+//            var step = this.options.step || 20; // was 20
+            var step = 20; // was 20
+            var last = "";
+            var counter = 0;
+            var c = "";  
+            var minLen = 1;
+            var maxLen = 3;  
+
+            if ((toneType == 0) || (toneType == 1)){
+              // DTMF normal || // DMF Lonf
+              if (toneType == 1) {
+                //DTMF Long (ABCD)
+                minLen = 3;
+                maxLen = 3;  
+              } else {
+                //DTMF Normal
+                minLen = 0.4;
+                maxLen = 9;  
               }
+              c = tc.dtmf.Chars[t1][t2]; 
+              last = tc.dtmf.last;
+              tc.dtmf.counter++;
+              counter = tc.dtmf.counter;
+              tc.dtmf.last = c 
+            } else if (toneType == 2) {
+              // SS5
+              minLen = 1;
+              maxLen = 5;
+              c = tc.ss5.Chars[t1][t2];  
+              last = tc.ss5.last;
+              tc.ss5.counter++;
+              counter = tc.ss5.counter;
+              tc.ss5.last = c 
+            } else if (toneType == 3) {
+              // CLEAR 
+//              console.log("Clear");
+              c = "";
+            }
+
+            var minCnt = (step * 0.75)*minLen
+            var maxCnt = (step * 0.75)*maxLen
+
+            if (last == c && toneType != 3) {
+              console.log("Considering Tone (max) "+c+" = "+t1+","+t2+" Counter was "+counter+" type was"+toneType);
+              if (counter > minCnt) {
+                  console.log("KEEPING Tone (max) "+c+" = "+t1+","+t2+" Counter was "+counter+" type was"+toneType);
+                  cb(c);
+                  if (toneType == 2) {
+                    tc.ss5.counter = 0;
+                  } else {
+                    tc.dtmf.counter = 0;
+                  }
+                    }
+            } else {
+              if (toneType == 2) {
+                tc.ss5.counter = 0;
+              } else {
+                tc.dtmf.counter = 0;
+              }
+            }
 
           }
-      
+
+          var tc = new tones();
+
           var last; var last2;
           var counter = 0; var counter2;
-          var duration = this.options.duration || 100;
-          var step = this.options.step || 10;
+          var duration = this.options.duration || 100; // Was 100
+          var step = this.options.step || 20; // was 20
       
           this._timer = setInterval(function () {
             analyser.getByteFrequencyData(freqs);
@@ -187,57 +231,47 @@
             for (var i = 0; i < freqs.length; i++) {
               if (freqs[i] > max) max = freqs[i];
             }
-            var [x,xX] = findDtmfIndex(freqs, dtmfFreqs[0], binWidthInHz);
-            var [y,yX] = findDtmfIndex(freqs, dtmfFreqs[1], binWidthInHz);
-            var [z,zX] = findDtmfIndex(freqs, sigFreqs, binWidthInHz);
-      //TODO: Refactor this mess
+            var [x,xX] = findDtmfIndex(freqs, tc.dtmf.Freqs[0], binWidthInHz);
+            var [y,yX] = findDtmfIndex(freqs, tc.dtmf.Freqs[1], binWidthInHz);
+            var [z,zX] = findDtmfIndex(freqs, tc.ss5.Freqs, binWidthInHz);
+
+
             if (z >= 0) {
-                var sfc = sigFreqs.slice();
+                var sfc = tc.ss5.Freqs.slice();
                 sfc[z] = -999; 
                 var [z2,z2X] = findDtmfIndex(freqs, sfc, binWidthInHz);
             }  else {
               z2 = -1
             }
-//            if ((z >= 0 && z2 >= 0) || (x >= 0 && y >= 0)) {
-//              if ((zX*z2X) > [xX*yX])  {
-//                var c = ss5mfChars(z,z2);
-//              } else {
-//                var c = dtmfChars[x][y];
-//              }  
-            
-              if (z >= 0 && z2 >= 0) {
-                var c = ss5mfChars(z,z2);
-                if (last == c) {
-                  counter++;
-                  if (counter > step * 0.75) {
-                    cb(c);
-                    counter = 0;
-                  }
-                } else {
-                  counter = 0;
-                }
-                last = c;              
-              }
               
-              if (x >= 0 && y >= 0) {
+            if ((x >= 0 & xX >= 200) || (y >= 0 & yX >= 200) || (z >= 0 & zX >= 200)  || (z2 >= 0 & z2X >= 200))  {
 
-                var c2 = dtmfChars[x][y];
-                if (last2 == c2) {
-                  counter2++;
-                  if (counter2 > step * 0.75) {
-                    cb(c2);
-                    counter2 = 0;
-                  }
+              //              console.log("Valid Tones "+x+"("+xX+") "+y+"("+yX+") "+z+"("+zX+") "+z2+"("+z2X+") ");
+            }
+
+            // 2400 / 2600 are special single-tone cases, but present them on both side to support them as a special case
+            if (((z == 6 ) && (z2 != 7))|| ((z == 7) && ( z2 != 6)))  { z2 = z; z2X = zX;}
+            else if (((z2 == 6) && (z != 7)) || (z2 == 7)  && ( z != 6))  { z = z2; zX = z2X;};
+
+
+            if (xX + yX >= zX +z2X) {
+            // Process the loudest tone
+
+              if ((x >= 0 & xX >= 200) && (y >= 0 & yX >= 200)) {
+                if (y == 3) {
+                  // Long DTMF  
+                  countTones(x,y,1,cb);
                 } else {
-                  counter2 = 0;
+                  // Short DTMF
+                 countTones(x,y,0,cb);
+               }
+              }  
+            } else {
+                if ((z >= 0 & zX >= 200)  && (z2 >= 0 & z2X >= 200)) {
+                  countTones(z,z2,2,cb)
                 }
-                last2 = c2;              
-              }    
+            }
 
-//              console.log("Vars"+x+" "+y+" "+z+" "+z2)
-
-//            }
-      
           }, duration / step);
         }
         stop() {

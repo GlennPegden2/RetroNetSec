@@ -3,7 +3,7 @@ LABEL name="RetroNetSec_FS"
 
 
 RUN apt-get update && apt-get upgrade -y
-RUN apt-get install -y openssh-server vde2 iproute2 samba
+RUN apt-get install -y openssh-server vde2 iproute2 samba vsftpd
 
 RUN mkdir -p /root/.ssh 
 RUN --mount=type=secret,id=user_ssh_key cp /run/secrets/user_ssh_key /root/.ssh/id_rsa
