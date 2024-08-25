@@ -23,7 +23,7 @@ def main():
 
 		hasBuiltImage = "&#x274C;"
 		hasContainer = "&#x274C;"
-		runState = "N/A </a>)"
+		runState = "N/A "
 		portList = ""
 		imgDesc = ""
 		warnText = ""
@@ -41,15 +41,15 @@ def main():
 
 		if ('labels' in composeInfo["services"][service]):
 			for labels in (composeInfo["services"][service]['labels']):
-				if ("needs_separate_img") in labels:
-					if (os.path.isfile(f"{composeInfo["services"][service]['build']['context']}/{labels['needs_separate_img']}")):
-						warnText += f"User supplied IMG found at {composeInfo["services"][service]['build']['context']}/{labels['needs_separate_img']} "	
+				if ("retronetsec.needs_separate_img") in labels:
+					if (os.path.isfile(f"{composeInfo["services"][service]['build']['context']}/{composeInfo["services"][service]['labels']['retronetsec.needs_separate_img']}")):
+						warnText += f"User supplied IMG found at {composeInfo["services"][service]['build']['context']}/{composeInfo["services"][service]['labels']['retronetsec.needs_separate_img']} "	
 					else:	
-						warnText += f"Requires a IMG file not included in this distibution. Ensure {labels['needs_separate_img']} is in {composeInfo["services"][service]['build']['context']} or building the image will fail"
+						warnText += f"Requires a IMG file not included in this distibution. Ensure {composeInfo["services"][service]['labels']['retronetsec.needs_separate_img']} is in {composeInfo["services"][service]['build']['context']} or building the image will fail"
 
 
-				if ("img_description") in labels:
-					imgDesc = labels['img_description'] 
+				if ("retronetsec.img_description") in labels:
+					imgDesc = composeInfo["services"][service]['labels']['retronetsec.img_description'] 
 
 
 		if (imageInfo):
@@ -59,18 +59,17 @@ def main():
 					hasContainer = "&check;"
 					runState = container.state.status
 
-
 					portList = ""
 					for port in container.network_settings.ports:
 						hostPort = container.network_settings.ports[port][0]['HostPort']
 						port = getPortConnectionLink(port, hostPort)
-						portList += f"{hostPort} ({port})"	
+						portList += f"{hostPort} ({port})<br/>"	
 					break
 
 		if runState == "running":
-			runState += f" (<a href='/dstop/{service}'>[Shut Down]</a>)"
+			runState += f" (<a href='/dstop/{service}'><br/>[Shut Down]</a>)"
 		else:
-			runState += f" (<a href='/dstart/{service}'>[Start Up]</a>)"
+			runState += f" (<a href='/dstart/{service}'><br/>[Start Up]</a>)"
 
 		if (service == "vde-switch") and (runState.split(" ")[0] != "running"):
 			warnText += "<p>vde-switch is NOT running, networking will NOT work until it's enabled</p>" 
