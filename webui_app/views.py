@@ -1,13 +1,16 @@
 """ Web UI for RetroNetSec """
 import os
 from flask import Flask
+from flask import render_template
 from python_on_whales import docker
 import yaml
-from flask import render_template
 from . import app
 from . import helpers
+import json
 
 #app = Flask(__name__)
+
+
 
 @app.route('/')
 def main():
@@ -23,7 +26,7 @@ def main():
         composeInfo = yaml.safe_load(f)
 
     out = "<style>table, th, td { border: solid 1px #CCC; } table { width: 100%;} th, td { padding: 0; text-align: left;}</style><table>"
-    out += "<tr style='text-align:left'><th>Service</th><th>Image Name</th><th>Has Image</th><th>Has Container</th><th>Run State</th><th>Connect</th><th>Description</th><th>Notes</th></tr>"
+    out += "<tr style='text-align:left'><th>&nbsp;</th><th>Service</th><th>Image Name</th><th>Has Image</th><th>Has Container</th><th>Run State</th><th>Connect</th><th>Description</th><th>Notes</th></tr>"
     for service in composeInfo["services"].keys():
 
         hasBuiltImage = "&#x274C;"
@@ -59,6 +62,13 @@ def main():
                 if ("retronetsec.img_description") in labels:
                     imgDesc = composeInfo["services"][service]['labels']['retronetsec.img_description'] 
 
+                if "retronetsec.logo" in labels:
+                    iconPath = composeInfo["services"][service]['labels']['retronetsec.logo'] 
+                    icon = f"<img src='{iconPath}' style='width:100px;height:100px;'>"
+                else:
+                    icon = "&nbsp;"     
+
+
 
         if (imageInfo):
             hasBuiltImage = "&check;"
@@ -69,9 +79,10 @@ def main():
 
                     portList = ""
                     for port in container.network_settings.ports:
-                        hostPort = container.network_settings.ports[port][0]['HostPort']
-                        port = getPortConnectionLink(port, hostPort)
-                        portList += f"{hostPort} ({port})<br/>"	
+                        if isinstance(container.network_settings.ports[port], list):
+                            hostPort = container.network_settings.ports[port][0]['HostPort']
+                            port = getPortConnectionLink(port, hostPort)
+                            portList += f"{hostPort} ({port})<br/>"	
                     break
 
         if runState == "running":
@@ -82,17 +93,27 @@ def main():
         if (service == "vde-switch") and (runState.split(" ")[0] != "running"):
             warnText += "<p>vde-switch is NOT running, networking will NOT work until it's enabled</p>" 
 
-        out += (f'<tr><td>{service}</td><td>{serviceImageName}</td><td>{hasBuiltImage}</td><td>{hasContainer}</td><td>{runState}</td><td>{portList}</td><td>{imgDesc}</td><td style="color:red">{warnText}</tr>') 
+        out += (f'<tr><td>{icon}</td><td>{service}</td><td>{serviceImageName}</td><td>{hasBuiltImage}</td><td>{hasContainer}</td><td>{runState}</td><td>{portList}</td><td>{imgDesc}</td><td style="color:red">{warnText}</tr>') 
 
     
 
     out += "</table>"
 
+    x =  '''{ "bill" : { "name":"John",
+                "age":30, 
+                "address":"New York" , 
+                "email" : "A@b" },
+             "bob" :    
+            { "name":"John2", 
+            "age":302, 
+            "address":"Old York" , 
+            "email" : "c@d" } }'''
 
+    return render_template(
+        "home2.html",
+        users = json.loads(x)
+    )
 
-    
-
-    return out
 
 @app.route('/dstart/<sname>')
 def start_service(sname):
