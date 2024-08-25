@@ -29,6 +29,7 @@ services:
       - NET_ADMIN
     labels:
       retronetsec.img_description: "Software defined networking (essemtially a software switch) that all the hosts attempt to use. Without this hosts can't talk to each other"
+      retronetsec.logo: "/images/icons/v2.png"
 
   fs1:
     image: retronetsec/fs1:${TAG:-latest}
