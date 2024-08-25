@@ -1,0 +1,4 @@
+flask
+docker
+python_on_whales
+pyyaml

@@ -1,5 +1,4 @@
 #docker-compose.yml (Base)
-version: '3.4'
 
 networks:
   retronet: 
@@ -28,6 +27,8 @@ services:
     tty: true
     cap_add:
       - NET_ADMIN
+    labels:
+      - "img_description" : "Software defined networking (essemtially a software switch) that all the hosts attempt to use. Without this hosts can't talk to each other"
 
   fs1:
     image: retronetsec/fs1:${TAG:-latest}
@@ -46,8 +47,8 @@ services:
     cap_add:
       - mknod
       - NET_ADMIN
-
-
+    labels:
+      - "img_description" : "A modern file server with old school software, available over FTP & SMB {WORK IN PROGRESS}"
 
 
   dns:
@@ -61,12 +62,20 @@ services:
       - NET_ADMIN
     networks:
       - retronet  
+    labels:
+      - "img_description" : "A modern DNS sever, but with some host records that my cause strange behaviour on old machines"
 
   dos622:
     image: retronetsec/dos622:${TAG:-latest}
-    build : ./hosts/DOS/ms-dos-6-22
+    build : 
+      context: ./hosts/DOS/ms-dos-6-22
     ports: 
        - "5910:5900"  
+    labels:
+      - "needs_separate_img" : "Dos6.22.img"
+      - "img_description" : "A Basic DOS 6.22 machine. Has CD drive but no networking"
+
+
 
   wfw:
     image: retronetsec/wfw:${TAG:-latest}
@@ -84,6 +93,9 @@ services:
       - retronet  
     ports: 
        - "5901:5900"  
+    labels:
+      - "needs_separate_img" : "Win31.img"
+      - "img_description" : "Win 3.11 (Windows for Workgroups) with TCP/IP & NetBEUI, Netscape Navigator and more"
 
   win95plus:
     image: retronetsec/win95plus:${TAG:-latest}
@@ -101,6 +113,9 @@ services:
       - retronet  
     ports: 
        - "5906:5900"  
+    labels:
+      - "needs_separate_img" : "win95plus.img"
+      - "img_description" : "First release of Win 95, with Plus Pack for IE & TCP/IP"
 
 
 
@@ -121,6 +136,9 @@ services:
       - retronet  
     ports: 
        - "5902:5900"  
+    labels:
+      - "needs_separate_img" : "DoomIPX.img"
+      - "img_description" : "DOS 6.22 with IPX and Doom_SE"
 
 
   doomipx2:   
@@ -140,6 +158,9 @@ services:
       - retronet  
     ports: 
        - "5903:5900"  
+    labels:
+      - "needs_separate_img" : "DoomIPX.img"
+      - "img_description" : "DOS 6.22 with IPX and Doom_SE"
 
   ms-dos-6-22-tcpip:   
     image: retronetsec/ms-dos-6-22-tcpip:${TAG:-latest}
@@ -158,6 +179,9 @@ services:
       - retronet  
     ports: 
        - "5905:5900"  
+    labels:
+      - "needs_separate_img" : "ms-dos-6-22-tcpip.img"
+      - "img_description" : "A Basic DOS 6.22 machine, with Micrsofts first TCP/IP stack. Lacks most common TCP/IP tools"
 
 
   v7x86:   
@@ -177,6 +201,8 @@ services:
       - retronet  
     ports: 
        - "5907:5900"  
+    labels:
+      - "img_description" : "Unix v7 (Bell Labs circa 1979), ported to x86."
 
   kali:   
     image: retronetsec/kali:${TAG:-latest}
@@ -197,13 +223,15 @@ services:
        - "5922:22"  
     cap_add:
       - NET_ADMIN
+    labels:
+      - "img_description" : "The latest version of Kali, hand for debugging as as a client to test from. Nothing retro about this"
 
   2600-pots:
-    image: retronetsec/2600-pots:${TAG:-latest}
-    build : 
-      context: ./hosts/misc/2600-pots
+    image: ghcr.io/glennpegden2/bbata:latest
     ports: 
        - "8080:80"  
+    labels:
+      - "img_description" : "Glenn Pegdens simulation of a blueboxable POTS phone system, in the style of and adventure game"
 
   stig:   
     image: retronetsec/stig:${TAG:-latest}
@@ -222,4 +250,9 @@ services:
       - retronet  
     ports: 
        - "5904:5900"  
+    labels:
+      - "needs_separate_img" : 
+        - "MSDOS SERVER_1.vhd"
+        - "stig.img"
+      - "img_description" : "Stigs DOS box and software server"
 

@@ -13,3 +13,5 @@ RetroNetSecImages.zip
 hosts/Windows/Win95/win95plus.img
 .DS_Store
 hosts/Unix/v7x86/v7x86.img
+__pycache__/
+.vscode/launch.json

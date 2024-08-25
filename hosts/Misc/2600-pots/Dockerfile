@@ -1,2 +1,2 @@
-FROM nginx
-COPY src/ /usr/share/nginx/html
+FROM ghcr.io/glennpegden2/bbata:latest
+
