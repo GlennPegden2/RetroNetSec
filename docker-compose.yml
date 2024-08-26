@@ -11,6 +11,7 @@ secrets:
     file: ./secrets/ssh/id_rsa_shared.pub
      
 services:
+#Everything is reliant of VDE, so keep it at the top
   vde-switch:
     image: retronetsec/vde-switch:${TAG:-latest}
     build: 
@@ -29,41 +30,9 @@ services:
       - NET_ADMIN
     labels:
       retronetsec.img_description: "Software defined networking (essemtially a software switch) that all the hosts attempt to use. Without this hosts can't talk to each other"
+      retronetsec.logo: "/images/icons/v2.png"
 
-  fs1:
-    image: retronetsec/fs1:${TAG:-latest}
-    build : 
-      context: ./networking/FileServer
-      secrets: 
-        - user_ssh_key
-    environment:
-      - vdehost=vde-switch
-    depends_on:
-      - vde-switch
-    links:
-      - vde-switch
-    networks:
-      - retronet  
-    cap_add:
-      - mknod
-      - NET_ADMIN
-    labels:
-      retronetsec.img_description: "A modern file server with old school software, available over FTP & SMB {WORK IN PROGRESS}"
-
-
-  dns:
-    restart: always
-    image: strm/dnsmasq
-    volumes:
-      - ./networking/dns/dnsmasq.conf:/etc/dnsmasq.conf
-    ports:
-      - "53:53/udp"
-    cap_add:
-      - NET_ADMIN
-    networks:
-      - retronet  
-    labels:
-      retronetsec.img_description: "A modern DNS sever, but with some host records that my cause strange behaviour on old machines"
+#DOS
 
   dos622:
     image: retronetsec/dos622:${TAG:-latest}
@@ -74,49 +43,6 @@ services:
     labels:
       retronetsec.needs_separate_img: "Dos6.22.img"
       retronetsec.img_description: "A Basic DOS 6.22 machine. Has CD drive but no networking"
-
-
-
-  wfw:
-    image: retronetsec/wfw:${TAG:-latest}
-    build : 
-      context: ./hosts/Windows/Win3.11
-      secrets: 
-        - user_ssh_key
-    environment:
-      - vdehost=vde-switch
-    depends_on:
-      - vde-switch
-    links:
-      - vde-switch
-    networks:
-      - retronet  
-    ports: 
-       - "5901:5900"  
-    labels:
-      retrnoetsec.needs_separate_img: "Win31.img"
-      retrnoetsec.img_description: "Win 3.11 (Windows for Workgroups) with TCP/IP & NetBEUI, Netscape Navigator and more"
-
-  win95plus:
-    image: retronetsec/win95plus:${TAG:-latest}
-    build : 
-      context: ./hosts/Windows/Win95
-      secrets: 
-        - user_ssh_key
-    environment:
-      - vdehost=vde-switch
-    depends_on:
-      - vde-switch
-    links:
-      - vde-switch
-    networks:
-      - retronet  
-    ports: 
-       - "5906:5900"  
-    labels:
-      retronetsec.needs_separate_img: "win95plus.img"
-      retronetsec.img_description: "First release of Win 95, with Plus Pack for IE & TCP/IP"
-
 
 
   doomipx:   
@@ -183,6 +109,70 @@ services:
       retronetsec.needs_separate_img: "ms-dos-6-22-tcpip.img"
       retronetsec.img_description: "A Basic DOS 6.22 machine, with Micrsofts first TCP/IP stack. Lacks most common TCP/IP tools"
 
+  stig:   
+    image: retronetsec/stig:${TAG:-latest}
+    build : 
+      context: ./hosts/DOS/stig
+      secrets: 
+        - user_ssh_key
+    environment:
+      - vdehost=vde-switch
+    depends_on:
+        vde-switch:
+          condition: service_started
+    links:
+      - vde-switch
+    networks:
+      - retronet  
+    ports: 
+       - "5904:5900"  
+    labels:
+      retronetsec.needs_separate_img : "stig.img"
+      retronetsec.img_description: "Stigs DOS box and software server"
+
+#Windows
+
+  wfw:
+    image: retronetsec/wfw:${TAG:-latest}
+    build : 
+      context: ./hosts/Windows/Win3.11
+      secrets: 
+        - user_ssh_key
+    environment:
+      - vdehost=vde-switch
+    depends_on:
+      - vde-switch
+    links:
+      - vde-switch
+    networks:
+      - retronet  
+    ports: 
+       - "5901:5900"  
+    labels:
+      retronetsec.needs_separate_img: "Win31.img"
+      retronetsec.img_description: "Win 3.11 (Windows for Workgroups) with TCP/IP, NetBEUI, Netscape Navigator and more"
+
+  win95plus:
+    image: retronetsec/win95plus:${TAG:-latest}
+    build : 
+      context: ./hosts/Windows/Win95
+      secrets: 
+        - user_ssh_key
+    environment:
+      - vdehost=vde-switch
+    depends_on:
+      - vde-switch
+    links:
+      - vde-switch
+    networks:
+      - retronet  
+    ports: 
+       - "5906:5900"  
+    labels:
+      retronetsec.needs_separate_img: "win95plus.img"
+      retronetsec.img_description: "First release of Win 95, with Plus Pack for IE & TCP/IP"
+
+#Unix
 
   v7x86:   
     image: retronetsec/v7x86:${TAG:-latest}
@@ -203,6 +193,53 @@ services:
        - "5907:5900"  
     labels:
       retronetsec.img_description: "Unix v7 (Bell Labs circa 1979), ported to x86."
+
+#Misc
+
+  bbata:
+    image: ghcr.io/glennpegden2/bbata:latest
+    ports: 
+       - "8080:80"  
+    labels:
+      retronetsec.img_description: "Glenn Pegdens simulation of a blueboxable POTS phone system, in the style of and adventure game"
+
+
+#Modern Utilities
+
+  fs1:
+    image: retronetsec/fs1:${TAG:-latest}
+    build : 
+      context: ./networking/FileServer
+      secrets: 
+        - user_ssh_key
+    environment:
+      - vdehost=vde-switch
+    depends_on:
+      - vde-switch
+    links:
+      - vde-switch
+    networks:
+      - retronet  
+    cap_add:
+      - mknod
+      - NET_ADMIN
+    labels:
+      retronetsec.img_description: "A modern file server with old school software, available over FTP & SMB {WORK IN PROGRESS}"
+
+
+  dns:
+    restart: always
+    image: strm/dnsmasq
+    volumes:
+      - ./networking/dns/dnsmasq.conf:/etc/dnsmasq.conf
+    ports:
+      - "53:53/udp"
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - retronet  
+    labels:
+      retronetsec.img_description: "A modern DNS sever, but with some host records that my cause strange behaviour on old machines"
 
   kali:   
     image: retronetsec/kali:${TAG:-latest}
@@ -225,32 +262,4 @@ services:
       - NET_ADMIN
     labels:
       retronetsec.img_description: "The latest version of Kali, hand for debugging as as a client to test from. Nothing retro about this"
-
-  2600-pots:
-    image: ghcr.io/glennpegden2/bbata:latest
-    ports: 
-       - "8080:80"  
-    labels:
-      retronetsec.img_description: "Glenn Pegdens simulation of a blueboxable POTS phone system, in the style of and adventure game"
-
-  stig:   
-    image: retronetsec/stig:${TAG:-latest}
-    build : 
-      context: ./hosts/DOS/stig
-      secrets: 
-        - user_ssh_key
-    environment:
-      - vdehost=vde-switch
-    depends_on:
-        vde-switch:
-          condition: service_started
-    links:
-      - vde-switch
-    networks:
-      - retronet  
-    ports: 
-       - "5904:5900"  
-    labels:
-      retronetsec.needs_separate_img : "stig.img"
-      retronetsec.img_description: "Stigs DOS box and software server"
 

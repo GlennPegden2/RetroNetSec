@@ -25,8 +25,13 @@ Populate secrets/ssh by doing ssh-keygen -t rsa -b 4096 -f ./secrets/ssh/id_rsa_
 
 ## RUNNING
 
-python retronetsecweb.py
+Start the web ui using
 
+python retronetsec.py
+
+Then point your web browser at http://127.0.0.1:8000
+
+Or just use docker compose to start/stop container as needed.
 
 ## Network:
 

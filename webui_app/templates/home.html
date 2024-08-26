@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+  <head>
+    <title>RetoNetSec - Admin</title>
+    <link href="https://unpkg.com/gridjs/dist/theme/mermaid.min.css" rel="stylesheet" />
+    <style>
+      body {
+        font-family: Sans-Serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h1>RetoNetSec - Admin</h1>
+      <hr>
+      <div id="status"></id>
+      <div id="table"></div>
+    </div>
+    <script src="https://unpkg.com/gridjs/dist/gridjs.umd.js"></script>
+    <script>
+      new gridjs.Grid({
+        columns: [
+          { id: 'icon', name:'Icon',  formatter: (cell) => gridjs.html(`${cell}`) },
+          { id: 'service', name:'Service' },
+          { id: 'image_name', name: 'Image Name' },
+          { id: 'has_image', name: 'Image', sort: false,  formatter: (cell) => gridjs.html(`${cell}`) },
+          { id: 'has_container', name: 'Container', sort: false,  formatter: (cell) => gridjs.html(`${cell}`) },
+          { id: 'run_state', name: 'Run State' },
+          { id: 'connect_link', name: 'Connect', formatter: (cell) => gridjs.html(`${cell}`)},
+          { id: 'description', name: 'Description' },
+          { id: 'notes', name: 'Notes' },
+          { id: 'actions', name: 'Actions',  formatter: (cell) => gridjs.html(`${cell}`) },
+        ],
+        data: [
+          {% for user in users %}
+            {
+              icon: '<img style="max-width:100%; max-height:100%;" src="{{url_for('static', filename='images/icons/' + users[user]['service'] + '.png')}}" />',
+              service: '{{ users[user]["service"] }}',
+              image_name: '{{ users[user]["image_name"] }}',
+              has_image: {% if users[user]["has_image"] == True %} '&check;' {% else %} '&cross;' {% endif %},
+              has_container: {% if users[user]["has_container"] == True %} '&check;' {% else %} '&cross;' {% endif %},
+              run_state: '{{ users[user]["run_state"] }}', 
+              connect_link: '{% 
+                  for index in range(0,(users[user]["connect"]|length)) %}{% if users[user]["connect_uri"][index] != ""
+                          %}<a href="{{users[user]["connect_uri"][index]}}">Connnect via {{users[user]["connect_proto"][index]}}</a>{%
+                      else %}Unknown{% endif %} ({{ users[user]["connect"][index]}})<br/>{% endfor %}',
+              description: '{{ users[user]["description"] }}',
+              notes: '{{ users[user]["notes"] }}',
+              actions: {% if users[user]["run_state"] == "running" %}'<a href="/dstop/{{ users[user]["service"] }}" title="Stop Service"> &darr; Stop Service</a>' {% else %} '<a href="/dstart/{{ users[user]["service"] }}"  title="Start Service">&uarr; Start Service</a>' {% endif %}
+            },
+          {% endfor %}
+        ],
+        search: {
+          selector: (cell, rowIndex, cellIndex) => [0, 1, 4].includes(cellIndex) ? cell : null,
+        },
+        sort: true,
+        pagination: {
+          limit: 20
+        },
+      }).render(document.getElementById('table'));
+    </script>
+    <script>
+
+    </scrit>
+
+  </body>
+</html>
