@@ -5,6 +5,8 @@ NOT a CTF - A learning platform, play with ancient vulns for ancient systems
 
 The idea is to build a containerised collection of systems, capable of communitcation (over all types of ethernet protocols, not just TCP/IP but IPX, LanMan, DecNET, AppleTalk etc) between them. Ideally supporting interoperability with real vintage hardware too. With all the software elements containerised, so people can just spin-up the bits they want to explore.
 
+<img width="1885" alt="image" src="https://github.com/user-attachments/assets/6bb38449-0f2b-4552-8abb-63a6a009f50e">
+
 NOTE: 
    The clients subfolder should contain disk images. I'm not pushing these to github for size and copyright reasons. I'll think about a way to distribute them or build them from resources that already exist on the internet.
    Each folder should contain a txt explaining how we built the image
