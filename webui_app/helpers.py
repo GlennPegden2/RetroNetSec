@@ -52,7 +52,7 @@ def get_con_url(port,host_port):
         case "5900/tcp":
             return ["vnc", f"com.realvnc.vncviewer.connect://localhost:{host_port}" ]
         case "80/tcp":
-            return ["http" f"http://localhost:{host_port}" ]
+            return ["http" , f"http://localhost:{host_port}" ]
         case "443/tcp":
             return ["https",f"https://localhost:{host_port}" ]
         case "22/tcp":
