@@ -212,6 +212,7 @@ services:
       context: ./networking/FileServer
       secrets: 
         - user_ssh_key
+        - user_ssh_pubkey
     environment:
       - vdehost=vde-switch
     depends_on:
@@ -223,6 +224,8 @@ services:
     cap_add:
       - mknod
       - NET_ADMIN
+    ports: 
+       - "2023:22"  
     labels:
       retronetsec.img_description: "A modern file server with old school software, available over FTP & SMB {WORK IN PROGRESS}"
 

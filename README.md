@@ -51,7 +51,7 @@ Get the your image working in qemu OUTSIDE of docker first (remember change in r
 
 More Info - https://github.com/GlennPegden2/RetroNetSec/wiki 
 
-
+NOTE WHEN USING THE UI, some of the docker commands take a long time and don't output to the webpage, it's seggesting you have the command line output from the webserver visible for now, so you can see what the webserver is doing (you'll get this if you can the python script from the command line)
 
 
 
