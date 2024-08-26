@@ -1,7 +1,7 @@
 """ Web UI for RetroNetSec """
 import os
 import json
-from flask import render_template
+from flask import render_template, redirect
 from python_on_whales import docker
 import yaml
 from . import app
@@ -107,10 +107,10 @@ def main():
 def start_service(sname):
     """ Start Containers"""
     helpers.start_container(sname)
-    return f"Started {sname}"
+    return redirect("/", code=302)
 
 @app.route('/dstop/<sname>')
 def stop_service(sname):
     """ Stop Containers"""
     helpers.stop_container(sname)
-    return f"Stop {sname}"
+    return redirect("/", code=302)
