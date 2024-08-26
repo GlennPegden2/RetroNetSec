@@ -1,153 +1,116 @@
 """ Web UI for RetroNetSec """
 import os
-from flask import Flask
+import json
 from flask import render_template
 from python_on_whales import docker
 import yaml
 from . import app
 from . import helpers
-import json
-
-#app = Flask(__name__)
-
-
 
 @app.route('/')
 def main():
     """ Main root page, shows known services and their statuses """
 
-    if helpers.isDockerUp() is False:
+    if helpers.is_docker_up() is False:
         return "Docker doesn't seem to be running"
 
-#		dockerImageList = docker.image.list(serviceImageName)
-    containerInfo = docker.ps(all=True)
+    container_info = docker.ps(all=True)
 
     with open('docker-compose.yml', 'r',  encoding='UTF-8') as f:
-        composeInfo = yaml.safe_load(f)
+        compose_info = yaml.safe_load(f)
 
-    out = "<style>table, th, td { border: solid 1px #CCC; } table { width: 100%;} th, td { padding: 0; text-align: left;}</style><table>"
-    out += "<tr style='text-align:left'><th>&nbsp;</th><th>Service</th><th>Image Name</th><th>Has Image</th><th>Has Container</th><th>Run State</th><th>Connect</th><th>Description</th><th>Notes</th></tr>"
-    for service in composeInfo["services"].keys():
+    jout = "{"
+    for service in compose_info["services"].keys():
 
-        hasBuiltImage = "&#x274C;"
-        hasContainer = "&#x274C;"
-        runState = "N/A "
-        portList = ""
-        imgDesc = ""
-        warnText = ""
+        has_built_imagee = "false"
+        has_container = "false"
+        run_state = "N/A "
+        port_list = []
+        img_desc = ""
+        warn_text = ""
 
-        serviceImageName = f'{composeInfo["services"][service]["image"].split(":")[0]}:latest'	
-        imageInfo = docker.image.list(serviceImageName)
+        service_image_name = f'{compose_info["services"][service]["image"].split(":")[0]}:latest'
+        image_info = docker.image.list(service_image_name)
 
-#	This should be faster than repeatedly calling the docker API, but for some reason isn't
-#  		hasBuiltImage = "No"
-#		for image in dockerImageList:
-
-#			if (serviceImageName in image.repo_tags):
-#				hasBuiltImage = "Yes"
-#				break
-
-        if ('labels' in composeInfo["services"][service]):
-            for labels in (composeInfo["services"][service]['labels']):
+        if 'labels' in compose_info["services"][service]:
+            for labels in (compose_info["services"][service]['labels']):
                 if "retronetsec.needs_separate_img" in labels:
-                    contextPath = composeInfo["services"][service]['build']['context']
-                    imgFilename = composeInfo["services"][service]['labels']['retronetsec.needs_separate_img']
-                    imgFullPath = f"{contextPath}/{imgFilename}"
-                    if (os.path.isfile(imgFullPath)):
-                        warnText += f"User supplied IMG found at {imgFullPath} "	
-                    else:	
-                        warnText += f"Requires a IMG file not included in this distibution. Ensure {imgFullPath} exists or building the image will fail"
+                    context_path = compose_info["services"][service]['build']['context']
+                    img_fn = (compose_info["services"][service]
+                               ['labels']['retronetsec.needs_separate_img'])
+                    img_fpath = f"{context_path}/{img_fn}"
+                    if os.path.isfile(img_fpath):
+                        warn_text += f"User supplied IMG found at {img_fpath} "
+                    else:
+                        warn_text += ("Requires a IMG file not included in this distibution."
+                                       f"Ensure {img_fpath} exists or building the image will fail")
 
+                if "retronetsec.img_description" in labels:
+                    img_desc = (compose_info["services"][service]
+                                ['labels']['retronetsec.img_description'])
 
-                if ("retronetsec.img_description") in labels:
-                    imgDesc = composeInfo["services"][service]['labels']['retronetsec.img_description'] 
+        if image_info:
+            has_built_imagee = "true"
+            for container in container_info:
+                if image_info[0].id in container.image:
+                    has_container = "true"
+                    run_state = container.state.status
 
-                if "retronetsec.logo" in labels:
-                    iconPath = composeInfo["services"][service]['labels']['retronetsec.logo'] 
-                    icon = f"<img src='{iconPath}' style='width:100px;height:100px;'>"
-                else:
-                    icon = "&nbsp;"     
-
-
-
-        if (imageInfo):
-            hasBuiltImage = "&check;"
-            for container in containerInfo:
-                if (imageInfo[0].id in container.image):
-                    hasContainer = "&check;"
-                    runState = container.state.status
-
-                    portList = ""
+                    port_list = []
+                    port_link_list = []
+                    port_proto_list = []
                     for port in container.network_settings.ports:
                         if isinstance(container.network_settings.ports[port], list):
-                            hostPort = container.network_settings.ports[port][0]['HostPort']
-                            port = getPortConnectionLink(port, hostPort)
-                            portList += f"{hostPort} ({port})<br/>"	
-                    break
+                            host_port = container.network_settings.ports[port][0]['HostPort']
+                            [ port_proto , port_link] = helpers.get_con_url(port, host_port)
+                            port_link_list.append(port_link)
+                            port_proto_list.append(port_proto)
+                            port_list.append(f"{host_port}|{port}")
+                        else:
+                            port_list.append(port)
+                            port_link_list.append("")
+                            port_proto_list.append("Unknown")
 
-        if runState == "running":
-            runState += f" (<a href='/dstop/{service}'><br/>[Shut Down]</a>)"
-        else:
-            runState += f" (<a href='/dstart/{service}'><br/>[Start Up]</a>)"
+        if (service == "vde-switch") and (run_state.split(" ")[0] != "running"):
+            warn_text += ("<p>vde-switch is NOT running, networking"
+                          "will NOT work until it's enabled</p>")
 
-        if (service == "vde-switch") and (runState.split(" ")[0] != "running"):
-            warnText += "<p>vde-switch is NOT running, networking will NOT work until it's enabled</p>" 
+#TODO: Why am I building this as json, only to convert it back to python objects later?
+        jout += f'''
+            "{service}" :
+            {{ "service":"{service}",
+                "image_name":"{service_image_name}",
+                "has_image" : {has_built_imagee},
+                "has_container" : {has_container},
+                "run_state" : "{run_state}",
+                "connect" : {json.dumps(port_list)},
+                "description" : "{img_desc}",
+                "notes" : "{warn_text}",
+                "connect_uri" : {json.dumps(port_link_list)},
+                "connect_proto" : {json.dumps(port_proto_list)}
 
-        out += (f'<tr><td>{icon}</td><td>{service}</td><td>{serviceImageName}</td><td>{hasBuiltImage}</td><td>{hasContainer}</td><td>{runState}</td><td>{portList}</td><td>{imgDesc}</td><td style="color:red">{warnText}</tr>') 
+            }},'''
 
-    
+    jout = jout[:-2]
+    jout += "}}"
 
-    out += "</table>"
 
-    x =  '''{ "bill" : { "name":"John",
-                "age":30, 
-                "address":"New York" , 
-                "email" : "A@b" },
-             "bob" :    
-            { "name":"John2", 
-            "age":302, 
-            "address":"Old York" , 
-            "email" : "c@d" } }'''
+    user_data = json.loads(jout)
 
     return render_template(
-        "home2.html",
-        users = json.loads(x)
+        "home.html",
+        users = user_data
     )
 
 
 @app.route('/dstart/<sname>')
 def start_service(sname):
-    container = f"retronetsec/{sname}:latest"
-    print(f"Starting {sname}")
-    print("Checking if image already exists")
-    outp = docker.image.list(container)
-    if (outp):
-        print("Image Exists, lets run it")
-    else:
-        print("Image doesn't exists, docker will try and pull then build it, this may take some time")
-
-    try:
-        docker.compose.up(sname)
-    except Exception as e:
-        print("Compose failed")
-        return f"Failed to start {sname} - Error was {e}"
-        
-    print("Compose Done")
+    """ Start Containers"""
+    helpers.start_container(sname)
     return f"Started {sname}"
 
-def getPortConnectionLink(port,hostPort):
-
-    match port:
-        case "5900/tcp":
-            return f"VNC <a href='com.realvnc.vncviewer.connect://localhost:{hostPort}'>[Connect]</a>"
-        case "80/tcp":
-            return f"http <a href='http://localhost:{hostPort}'>[Connect]</a>"
-        case "443/tcp":
-            return "https <a href='https://localhost:{hostPort}'>[Connect]</a>"
-        case "22/tcp":
-            return "ssh <a href='ssh://localhost:{hostPort}'>[Connect]</a>"
-        case _:
-            return port
-
-#if __name__ == '__main__':
-#    app.run(host='0.0.0.0', port=8000, debug=True)
+@app.route('/dstop/<sname>')
+def stop_service(sname):
+    """ Stop Containers"""
+    helpers.stop_container(sname)
+    return f"Stop {sname}"
