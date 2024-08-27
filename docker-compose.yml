@@ -30,7 +30,55 @@ services:
       - NET_ADMIN
     labels:
       retronetsec.img_description: "Software defined networking (essemtially a software switch) that all the hosts attempt to use. Without this hosts can't talk to each other"
-      retronetsec.logo: "/images/icons/v2.png"
+
+  fs1:
+    image: retronetsec/fs1:${TAG:-latest}
+    build : 
+      context: ./networking/FileServer
+      secrets: 
+        - user_ssh_key
+        - user_ssh_pubkey
+    environment:
+      - vdehost=vde-switch
+    depends_on:
+      - vde-switch
+    links:
+      - vde-switch
+    networks:
+      - retronet  
+    cap_add:
+      - mknod
+      - NET_ADMIN
+    ports: 
+       - "2023:22"  
+    labels:
+      retronetsec.img_description: "A modern file server with old school software, available over FTP & SMB {WORK IN PROGRESS}"
+
+
+  dns:
+    restart: always
+    image: retronetsec/dns:${TAG:-latest}
+    build : 
+      context: ./networking/dns
+      secrets: 
+        - user_ssh_key
+        - user_ssh_pubkey
+    environment:
+      - vdehost=vde-switch
+    depends_on:
+      - vde-switch
+    links:
+      - vde-switch
+    volumes:
+      - ./networking/dns/dnsmasq.conf:/etc/dnsmasq.conf
+    ports:
+      - "53:53/udp"
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - retronet  
+    labels:
+      retronetsec.img_description: "A modern DNS sever, but with some host records that my cause strange behaviour on old machines"
 
 #DOS
 
@@ -205,44 +253,6 @@ services:
 
 
 #Modern Utilities
-
-  fs1:
-    image: retronetsec/fs1:${TAG:-latest}
-    build : 
-      context: ./networking/FileServer
-      secrets: 
-        - user_ssh_key
-        - user_ssh_pubkey
-    environment:
-      - vdehost=vde-switch
-    depends_on:
-      - vde-switch
-    links:
-      - vde-switch
-    networks:
-      - retronet  
-    cap_add:
-      - mknod
-      - NET_ADMIN
-    ports: 
-       - "2023:22"  
-    labels:
-      retronetsec.img_description: "A modern file server with old school software, available over FTP & SMB {WORK IN PROGRESS}"
-
-
-  dns:
-    restart: always
-    image: strm/dnsmasq
-    volumes:
-      - ./networking/dns/dnsmasq.conf:/etc/dnsmasq.conf
-    ports:
-      - "53:53/udp"
-    cap_add:
-      - NET_ADMIN
-    networks:
-      - retronet  
-    labels:
-      retronetsec.img_description: "A modern DNS sever, but with some host records that my cause strange behaviour on old machines"
 
   kali:   
     image: retronetsec/kali:${TAG:-latest}
