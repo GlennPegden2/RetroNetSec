@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:24.10
 LABEL name="RetroNetSec_FS" 
 
 
