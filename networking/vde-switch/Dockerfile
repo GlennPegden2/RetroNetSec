@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:24.10
 LABEL name="RetroNetSec_VDE" 
 
 RUN apt-get update && apt-get upgrade -y
