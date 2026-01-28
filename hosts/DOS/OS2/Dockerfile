@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:3.23.3
 LABEL name="RetroNetSec_6.22" 
 COPY Dos6.22.img /root
 EXPOSE 5900
