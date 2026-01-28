@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:3.23.3
 LABEL name="RetroNetSec_Win311" 
 COPY win31.img /root
 COPY start.sh /root
